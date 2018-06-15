@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/dimrok/.platformio/penv/bin:/home/dimrok/.platformio/penv:/home/dimrok/.cargo/bin:/usr/local/go/bin:/home/dimrok/golang/bin:/opt/perso/:/home/dimrok/.cargo/bin:/home/dimrok/bin:/home/dimrok/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
