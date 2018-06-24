@@ -7,7 +7,7 @@
 
 #define PIXEL_PIN    5    // Digital IO pin connected to the NeoPixels.
 
-#define PIXEL_COUNT 750
+#define PIXEL_COUNT 150
 
 // Parameter 1 = number of pixels in strip,  neopixel stick has 8
 // Parameter 2 = pin number (most are valid)
@@ -18,8 +18,6 @@
 //   NEO_KHZ800  800 KHz bitstream (e.g. High Density LED strip), correct for neopixel stick
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-bool oldState = HIGH;
-int showType = 0;
 
 uint32_t 
 Wheel(byte WheelPos);
@@ -40,6 +38,15 @@ void
 colorWipe(uint32_t c, uint8_t wait);
 
 void
+sparkle(int wait);
+
+void
+sparkleRainbow(int wait);
+
+void
+wave(int wait);
+
+void
 startShow(int i);
 
 // Create a temporary strip with 2500 LEDs and reset them.
@@ -57,14 +64,14 @@ setup()
 {
   reset();
   strip.begin();
-  strip.setBrightness(100);
+  strip.setBrightness(30);
   strip.show(); // Initialize all pixels to 'off'
 }
 
 void
 loop()
 {
-  startShow(8);
+  startShow(12);
 }
 
 void
@@ -92,6 +99,12 @@ startShow(int i)
             break;
     case 9: theaterChaseRainbow(50);
             break;
+    case 10: sparkle(50);
+            break;
+    case 11: sparkleRainbow(50);
+            break;
+    case 12: wave(250);
+            break;
     default:
             break;
   }
@@ -104,6 +117,68 @@ colorWipe(uint32_t c, uint8_t wait)
   for(uint16_t i = 0; i < strip.numPixels(); i++) 
   {
     strip.setPixelColor(i, c);
+    strip.show();
+    delay(wait);
+  }
+}
+
+
+void 
+wave(int wait)
+{
+  const int colorsLenth = 10;
+  uint32_t colors[colorsLenth] = {0x002CCF, 0x3D00CF, 0x0B11CF, 0x1417C2, 0x1417C2, 0x1472C2, 0x1398B8, 0x6DA5C2, 0x8AB9FF, 0xA8FFEE};
+  int ks[24] = {0, 1, 2, 3, 4, 5, 6, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10}; 
+
+
+  for(int k = 0; k < 24; k++) {
+    for(int j = 0; j < colorsLenth; j++)
+    {
+      for(int i = 0; i < strip.numPixels(); i = i+colorsLenth)
+      {
+        strip.setPixelColor(i+j, colors[colorsLenth - ((j + ks[k]) % colorsLenth)]);
+      }
+    }
+    strip.show();
+    delay(wait);
+  }
+
+
+}
+
+void 
+sparkle(int wait)
+{
+  uint32_t color = 0xFFFFFF;
+  for(int i = 0; i < strip.numPixels(); i++)
+  {
+    if (random(0, 100) < 20) {
+      strip.setPixelColor(i, color);
+    } else {
+      strip.setPixelColor(i, 0);
+    }
+  }
+  strip.show();
+  delay(wait);
+}
+
+void
+sparkleRainbow(int wait)
+{
+  uint32_t color = 0x1A43AB;
+  
+  for(uint16_t j = 0; j < 256*5; j++) 
+  {
+    for(uint16_t i = 0; i < strip.numPixels(); i++)
+    {
+      if (random(0, 100) < 20) {
+        strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+    //  strip.setPixelColor(i, Wheel(random(0,255)));
+      } else {
+        strip.setPixelColor(i, color);
+      }
+    } 
+      
     strip.show();
     delay(wait);
   }
@@ -126,7 +201,7 @@ rainbow(uint8_t wait)
 void
 rainbowCycle(uint8_t wait) 
 {
-  for(uint16_t j = 0; j<256*25; j++)
+  for(uint16_t j = 0; j<256*5; j++)
   { // 5 cycles of all colors on wheel
     for(uint16_t i = 0; i < strip.numPixels(); i++)
       strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
